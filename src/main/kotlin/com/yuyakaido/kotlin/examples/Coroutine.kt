@@ -1,12 +1,9 @@
 package com.yuyakaido.kotlin.examples
 
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 
 fun main() {
-    runCancellationExample()
+    runSuspendFunctionExample()
 }
 
 private fun runGlobalScopeExample() {
@@ -51,5 +48,20 @@ private fun runCancellationExample() {
         println("Hello")
         delay(3000)
         job.cancel()
+    }
+}
+
+private fun runSuspendFunctionExample() {
+    val initialization = suspend { println("Initialization on ${Thread.currentThread().name}") }
+    val something = suspend {
+        withContext(Dispatchers.IO) {
+            println("Something on ${Thread.currentThread().name}")
+        }
+    }
+    val completion = suspend { println("Completion on ${Thread.currentThread().name}") }
+    runBlocking {
+        initialization.invoke()
+        something.invoke()
+        completion.invoke()
     }
 }
